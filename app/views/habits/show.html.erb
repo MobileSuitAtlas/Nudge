@@ -1,0 +1,18 @@
+<h2><%= @habit.icon %> <%= @habit.name %></h2>
+
+<p><em><%= @habit.encouragement_message %></em></p>
+
+<div class="stats">
+    <h3> Stats </h3>
+    <ul>
+        <li> Current Streak: <%= @habit.current_streak %> days</li>
+        <li> Longest Streak: <%= @habit.longest_streak %> days</li>
+        <li> Last Check-In: <%= @habit.check_ins.order(date: :desc).limit(1).pluck(:date).first || "None Yet" %></li>
+        <li> Total Check-Ins: <%= @habit.check_ins.count %></li>
+        <li> Habit Age: <%= (Date.today - @habit.created_at.to_date).to_i %> days</li>
+    </ul>
+</div>
+
+<%= button_to "Check In Today", check_in_habit_path(@habit), method: :post %>
+
+<%= link_to "Back to Habits Page", habits_path %>

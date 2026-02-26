@@ -1,0 +1,31 @@
+<div class="container my-4">
+    <h1 class="mb-4 text-center">Your Habits :)</h1>
+
+    <div class="d-flex gap-2 mb-4 justify-content-center">
+        <%= link_to "Start a New Habit", new_habit_path, class: "btn btn-primary" %>
+        <%= button_to "Need a Little Nudge?", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
+    </div>
+
+    <div class="row gy-3">
+        <% @habits.each do |habit| %>
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        
+                        <h5 class="card-title fs-4">
+                            <%= habit.icon %> <%= habit.name %>
+                        </h5>
+                        <% if habit.prompt.present? %>
+                            <p class="text-muted mb-2"><%=habit.prompt %></p>
+                        <% end %>
+                        <p class="small text-muted mb-2">
+                            Current streak: <%= habit.current_streak %> days
+                        </p>
+
+                        <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary w-100" %>
+                    </div>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

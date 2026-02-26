@@ -1,0 +1,23 @@
+<h1>New Habits</h1>
+
+<h1> This is where you'd create a form for your habit! It will take note of the name such as reading, practicing, or studing. In the "Purpose" section, write down why you want this habit and why you seek to gain from it! Sort of something to keep your goal in mind even if it's super simple! </h1>
+
+<%= form_with model: @habit do |form| %>
+    <div>
+        <%= form.label :name, "Habit Name :D" %><br>
+        <%= form.text_field :name %>
+    </div>
+    <div>
+        <%= form.label :description, "What is your purpose for this habit?" %><br>
+        <%= form.text_area :description %>
+    </div>
+    <div>
+        <%= form.label :category, "What kind of a habit is this?" %><br>
+        <%= form.select :category,
+            Habit::TEMPLATES.keys,
+            include_blank: "Custom" %>
+    </div>
+    <div>
+        <%= form.submit "Create Habit" %>
+    </div>
+<% end %>
