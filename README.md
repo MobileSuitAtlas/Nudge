@@ -2,24 +2,24 @@
 
 > "A gentle habit tracker designed for people with anxiety or those working on personal growth."
 
-Nudge helps you build positive habits without pressure or negative reinforcement. It's designed to remind you gently - not with loud alarms, but with kind messages like *"Hello! Have you done your reading for today?"*
+Nudge helps build positive habits without pressure or negative reinforcement. It's designed to remind gently - not with loud alarms, but with kind messages like *"Hello! Have you done your reading for today?"*
 
-The goal isn't to keep you using the app forever. The best outcome? One day you drop it, knowing you've built a better habit.
+The goal isn't to keep using the app forever. The best outcome? One day drop it, knowing a better habit has been built.
 
 ---
 
 ## Features
 
 ### Core Functionality
-- **Habit Tracking** - Create habits with names, descriptions, and categories
+- **Habit Tracking** - Create habits with names, categories, and custom prompts
 - **Daily Check-Ins** - Mark habits as complete for the day
-- **Streak System** - Track consecutive days of completion
+- **Streak System** - Track consecutive days of completion (current & longest)
 - **Focus Habit** - Set one habit as today's main focus ⭐
-- **Make Main Focus** - Set any habit as your priority directly from the habits list
+- **Journal Entries** - Write thoughts, progress, and inspiration for each habit
 
 ### Encouragement System
-- **Daily Nudges** - Get gentle reminders and encouragement
-- **Streak Messages** - Personalized messages based on your streak
+- **Daily Nudges** - Toggle gentle noon reminders
+- **Streak Messages** - Personalized messages based on streak length
 - **Milestone Celebrations** - Special messages at 7, 14, 21, 28, and 30 days
 - **No Negative Reinforcement** - Only positive, supporting messages
 
@@ -42,6 +42,7 @@ Choose from preset categories or create custom habits:
 | **Bootstrap 5** | Styling & responsive design |
 | **Turbo** | Fast page updates |
 | **Stimulus** | Interactive JavaScript |
+| **Whenever** | Cron scheduling for nudges |
 | **Puma** | Web server |
 | **Docker** | Container deployment |
 
@@ -92,23 +93,31 @@ Choose from preset categories or create custom habits:
 Nudge/
 ├── app/
 │   ├── controllers/
-│   │   └── habits_controller.rb    # All habit actions
+│   │   ├── habits_controller.rb       # All habit actions
+│   │   └── entries_controller.rb     # Journal entries
 │   ├── models/
-│   │   ├── habit.rb                 # Habit logic & streak calculations
-│   │   └── check_in.rb              # Daily completion tracking
-│   └── views/
-│       └── habits/
-│           ├── index.html.erb      # List all habits
-│           ├── today.html.erb      # Today's view with check-ins
-│           ├── show.html.erb       # Habit details & stats
-│           └── new.html.erb        # Create new habit form
+│   │   ├── habit.rb                   # Habit logic, streaks, nudges
+│   │   ├── check_in.rb                # Daily completion tracking
+│   │   └── entry.rb                   # Journal entries
+│   ├── views/
+│   │   └── habits/
+│   │       ├── index.html.erb         # List all habits
+│   │       ├── today.html.erb         # Today's view with check-ins
+│   │       ├── show.html.erb          # Habit details, stats, entries
+│   │       └── new.html.erb           # Create new habit form
+│   └── javascript/
+│       └── nudge_app.js               # Notification handling
 ├── config/
-│   └── routes.rb                   # URL routes
+│   ├── routes.rb                      # URL routes
+│   └── schedule.rb                    # Cron schedule for nudges
 ├── db/
-│   ├── migrations/                 # Database migrations
-│   └── schema.rb                  # Database structure
+│   ├── migrations/                    # Database migrations
+│   └── schema.rb                      # Database structure
+├── lib/tasks/
+│   └── nudge.rake                     # Nudge scheduler task
 └── public/
-    └── icon.png                    # App icon
+    ├── manifest.json                  # PWA manifest
+    └── icon.png                      # App icon
 ```
 
 ---
@@ -117,15 +126,18 @@ Nudge/
 
 | URL | Method | Action | Description |
 |-----|--------|--------|-------------|
-| `/` | GET | today | Home - Today's habits |
+| `/` or `/today` | GET | today | Home - Today's habits |
 | `/habits` | GET | index | List all habits |
 | `/habits/new` | GET | new | Create habit form |
 | `/habits` | POST | create | Create new habit |
-| `/habits/:id` | GET | show | View habit details |
+| `/habits/:id` | GET | show | View habit details & entries |
 | `/habits/:id/check_in` | POST | check_in | Mark done for today |
 | `/habits/:id/nudge` | POST | nudge | Get encouragement |
 | `/habits/:id/set_focus` | POST | set_focus | Set today's focus |
+| `/habits/:id/toggle_reminder` | POST | toggle_reminder | Enable/disable daily nudge |
 | `/habits/reset_focus` | POST | reset_focus | Clear focus |
+| `/habits/:id/entries` | POST | create | Add journal entry |
+| `/habits/:id/entries/:id` | DELETE | destroy | Delete journal entry |
 
 ---
 
@@ -136,9 +148,10 @@ Nudge/
 |--------|------|-------------|
 | id | bigint | Primary key |
 | name | string | Habit name |
-| description | text | Why you want this habit |
 | category | string | Category (Reading, Writing, etc.) |
 | prompt | string | Custom reminder message |
+| reminder_time | time | Time for daily nudge (default: 12:00 PM) |
+| reminders_enabled | boolean | Whether nudges are enabled |
 | created_at | datetime | When habit was created |
 | updated_at | datetime | Last update |
 
@@ -149,6 +162,16 @@ Nudge/
 | habit_id | bigint | Foreign key to habits |
 | date | date | The day checked in |
 | created_at | datetime | When check-in was created |
+| updated_at | datetime | Last update |
+
+### entries table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| habit_id | bigint | Foreign key to habits |
+| content | text | Journal entry text |
+| entry_date | date | The date the entry is about |
+| created_at | datetime | When entry was created |
 | updated_at | datetime | Last update |
 
 ---
@@ -177,6 +200,9 @@ The app provides different messages based on streak length:
 - Milestone (7 days): "One week is impressive, truly something to be proud of!"
 - Milestone (30 days): "One month of pure consistency and dedication!"
 
+### Daily Nudge
+The daily nudge system allows enabling/disabling noon reminders for each habit. When enabled, a gentle notification appears if the habit hasn't been checked in for the day.
+
 ---
 
 ## Development History
@@ -191,14 +217,15 @@ The app provides different messages based on streak length:
 | Feb 23, 2026 | Added category and prompt fields |
 | Feb 26, 2026 | Fixed index page errors, added nudges |
 | Feb 26, 2026 | Added Focus section to index with "Make Main Focus" button |
+| Feb 27, 2026 | Added PWA manifest for mobile install |
+| Feb 27, 2026 | Added Journal Entries feature |
+| Feb 27, 2026 | Added simple daily nudge (one button, noon default) |
 
 ---
 
 ## Future Ideas
 
-- 📅 **Calendar View** - Visual calendar showing check-in history
-- 🔔 **Push Notifications** - Gentle browser reminders
-- 📱 **PWA Support** - Installable on mobile devices
+- 🔔 **Push Notifications** - Web Push API integration for actual notifications
 - 📊 **Statistics** - Charts and progress visualization
 - 👥 **User Accounts** - Sync across devices
 
