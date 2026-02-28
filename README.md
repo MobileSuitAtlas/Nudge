@@ -1,14 +1,217 @@
-# README
+# Nudge - A Gentle Habit Builder
 
-# This app is a personal experiment in building better habits — not through pressure or perfection, but through gentle consistency. It’s designed for anyone who wants to start a new habit, continue an existing one, or break an old pattern that no longer serves them.
-# Some people struggle with remembering to do the simple things: reading, sketching, studying, drinking water, taking breaks. Others want help quitting long‑term habits like smoking or drinking. This app aims to support both paths without having the past coming back to haunt or the future that looks too far away.
-# The goal isn’t to keep you using the app forever. In fact, the best outcome is that one day you stop needing it — because the habit has become part of your life, or because you’ve successfully let go of something you wanted to quit.
-# This project is a mix of trial, error, and learning. I’m building it to explore Rails, but also to create something meaningful: a small tool that helps people build the habits they want, at a pace that feels sustainable.   02‑02‑26 — 1:43pm
+> "A gentle habit tracker designed for people with anxiety or those working on personal growth."
 
+Nudge helps you build positive habits without pressure or negative reinforcement. It's designed to remind you gently - not with loud alarms, but with kind messages like *"Hello! Have you done your reading for today?"*
 
-# As far as development goes for this program, I forgot that I had made some extra files that added the Controller, Routes, and Main Page, like a Title for the habit and a description of it. That was over the course of a couple of days 02-03rd - 6th-2026 - 12:50am
+The goal isn't to keep you using the app forever. The best outcome? One day you drop it, knowing you've built a better habit.
 
-# Today I had added the 'Streak' system for the purpose to get people to be more attentive on the use of the habits and or apps. Everything does seem to be working as far as the app goes, No problems. 02-07-2026 - 12:53am
+---
 
-# I've been really bad at keeping up with the timeline of events in the development of this app. I added a "words of encouragement" for each day they continue their streak. It took sometime but I found that I was having the "encouragement_message" class inside the "current_streak" class caused a hiccup that I later found to be the issue. Words of encouragement runs without any issues and messages display properly. 02-08-06 - 3:54pm     During this time after the messages portion. I added a delete button that should help rid of habits that you no longer want to learn or just something you didnt mean to add. 02-08-26 - 5:20pm     
+## Features
 
+### Core Functionality
+- **Habit Tracking** - Create habits with names, descriptions, and categories
+- **Daily Check-Ins** - Mark habits as complete for the day
+- **Streak System** - Track consecutive days of completion
+- **Focus Habit** - Set one habit as today's main focus ⭐
+- **Make Main Focus** - Set any habit as your priority directly from the habits list
+
+### Encouragement System
+- **Daily Nudges** - Get gentle reminders and encouragement
+- **Streak Messages** - Personalized messages based on your streak
+- **Milestone Celebrations** - Special messages at 7, 14, 21, 28, and 30 days
+- **No Negative Reinforcement** - Only positive, supporting messages
+
+### Categories
+Choose from preset categories or create custom habits:
+- 📚 Reading
+- ✍️ Writing
+- 💪 Workout
+- 🎨 Drawing
+- Custom (anything you want!)
+
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **Ruby on Rails 8.1** | Web framework |
+| **PostgreSQL** | Database |
+| **Bootstrap 5** | Styling & responsive design |
+| **Turbo** | Fast page updates |
+| **Stimulus** | Interactive JavaScript |
+| **Puma** | Web server |
+| **Docker** | Container deployment |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Ruby 3.x
+- Rails 8.x
+- PostgreSQL
+- Node.js (for JavaScript)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/MobileSuitAtlas/Nudge.git
+   cd Nudge
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bundle install
+   npm install
+   ```
+
+3. **Set up the database**
+   ```bash
+   rails db:create db:migrate
+   ```
+
+4. **Start the server**
+   ```bash
+   rails server
+   ```
+
+5. **Open your browser**
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## Project Structure
+
+```
+Nudge/
+├── app/
+│   ├── controllers/
+│   │   └── habits_controller.rb    # All habit actions
+│   ├── models/
+│   │   ├── habit.rb                 # Habit logic & streak calculations
+│   │   └── check_in.rb              # Daily completion tracking
+│   └── views/
+│       └── habits/
+│           ├── index.html.erb      # List all habits
+│           ├── today.html.erb      # Today's view with check-ins
+│           ├── show.html.erb       # Habit details & stats
+│           └── new.html.erb        # Create new habit form
+├── config/
+│   └── routes.rb                   # URL routes
+├── db/
+│   ├── migrations/                 # Database migrations
+│   └── schema.rb                  # Database structure
+└── public/
+    └── icon.png                    # App icon
+```
+
+---
+
+## Routes
+
+| URL | Method | Action | Description |
+|-----|--------|--------|-------------|
+| `/` | GET | today | Home - Today's habits |
+| `/habits` | GET | index | List all habits |
+| `/habits/new` | GET | new | Create habit form |
+| `/habits` | POST | create | Create new habit |
+| `/habits/:id` | GET | show | View habit details |
+| `/habits/:id/check_in` | POST | check_in | Mark done for today |
+| `/habits/:id/nudge` | POST | nudge | Get encouragement |
+| `/habits/:id/set_focus` | POST | set_focus | Set today's focus |
+| `/habits/reset_focus` | POST | reset_focus | Clear focus |
+
+---
+
+## Database Schema
+
+### habits table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| name | string | Habit name |
+| description | text | Why you want this habit |
+| category | string | Category (Reading, Writing, etc.) |
+| prompt | string | Custom reminder message |
+| created_at | datetime | When habit was created |
+| updated_at | datetime | Last update |
+
+### check_ins table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| habit_id | bigint | Foreign key to habits |
+| date | date | The day checked in |
+| created_at | datetime | When check-in was created |
+| updated_at | datetime | Last update |
+
+---
+
+## Key Code
+
+### Streak Calculation (`app/models/habit.rb`)
+```ruby
+def current_streak
+  streak = 0
+  day = Date.today
+  
+  while check_ins.exists?(date: day)
+    streak += 1
+    day -= 1
+  end
+  streak
+end
+```
+
+### Encouragement Messages
+The app provides different messages based on streak length:
+- Day 0: "We start Today!"
+- Day 1: "1 small step for man, 1 giant leap for new habits!"
+- Day 3: "Day 3! I'm glad you are sticking with it!"
+- Milestone (7 days): "One week is impressive, truly something to be proud of!"
+- Milestone (30 days): "One month of pure consistency and dedication!"
+
+---
+
+## Development History
+
+| Date | Change |
+|------|--------|
+| Feb 2, 2026 | Project started - basic habit CRUD |
+| Feb 3-6, 2026 | Added controller, routes, title & description |
+| Feb 7, 2026 | Added streak system |
+| Feb 8, 2026 | Added encouragement messages, fixed bug with nested classes |
+| Feb 8, 2026 | Added delete button |
+| Feb 23, 2026 | Added category and prompt fields |
+| Feb 26, 2026 | Fixed index page errors, added nudges |
+| Feb 26, 2026 | Added Focus section to index with "Make Main Focus" button |
+
+---
+
+## Future Ideas
+
+- 📅 **Calendar View** - Visual calendar showing check-in history
+- 🔔 **Push Notifications** - Gentle browser reminders
+- 📱 **PWA Support** - Installable on mobile devices
+- 📊 **Statistics** - Charts and progress visualization
+- 👥 **User Accounts** - Sync across devices
+
+---
+
+## License
+
+MIT License - Feel free to use, modify, and share!
+
+---
+
+## Author
+
+Built with 💜 by [MobileSuitAtlas](https://github.com/MobileSuitAtlas)
+
+> "The best outcome is that one day you stop needing the app - because the habit has become part of your life."

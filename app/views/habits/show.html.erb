@@ -1,18 +1,154 @@
-<h2><%= @habit.icon %> <%= @habit.name %></h2>
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4 text-center"><%= @habit.icon %> <%= @habit.name %></h1>
+        </div>
+    </div>
 
-<p><em><%= @habit.encouragement_message %></em></p>
+    <!-- Encouragement Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                <em><%= @habit.encouragement_message %></em>
+            </div>
+        </div>
+    </div>
 
-<div class="stats">
-    <h3> Stats </h3>
-    <ul>
-        <li> Current Streak: <%= @habit.current_streak %> days</li>
-        <li> Longest Streak: <%= @habit.longest_streak %> days</li>
-        <li> Last Check-In: <%= @habit.check_ins.order(date: :desc).limit(1).pluck(:date).first || "None Yet" %></li>
-        <li> Total Check-Ins: <%= @habit.check_ins.count %></li>
-        <li> Habit Age: <%= (Date.today - @habit.created_at.to_date).to_i %> days</li>
-    </ul>
+    <!-- Stats Cards -->
+    <div class="row gy-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm habit-card card-delay-1">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Current Streak</h6>
+                    <p class="card-text fs-4 fw-bold"><%= @habit.current_streak %> days</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm habit-card card-delay-2">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Longest Streak</h6>
+                    <p class="card-text fs-4 fw-bold"><%= @habit.longest_streak %> days</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm habit-card card-delay-3">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Total Check-Ins</h6>
+                    <p class="card-text fs-4 fw-bold"><%= @habit.check_ins.count %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm habit-card card-delay-4">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Habit Age</h6>
+                    <p class="card-text fs-4 fw-bold"><%= (Date.today - @habit.created_at.to_date).to_i %> days</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm habit-card card-delay-5">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Last Check-In</h6>
+                    <p class="card-text fs-4 fw-bold"><%= @habit.check_ins.order(date: :desc).limit(1).pluck(:date).first || "None Yet" %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Entries Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm habit-card card-delay-6">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">💭 Journal & Thoughts</h5>
+                    
+                    <!-- Entry Form -->
+                    <div class="entry-form mb-4">
+                        <%= form_with(model: [@habit, @habit.entries.build], local: true) do |f| %>
+                            <div class="mb-2">
+                                <%= f.text_area :content, 
+                                    class: "form-control", 
+                                    rows: 3, 
+                                    placeholder: "e.g., Today I sketched a view of the city - the light was perfect at sunset" %>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center">
+                                <%= f.submit "Add Entry", class: "btn btn-purple" %>
+                                <small class="text-muted">Share your thoughts, progress, or inspiration</small>
+                            </div>
+                        <% end %>
+                    </div>
+
+                    <!-- Previous Entries -->
+                    <% if @habit.entries.any? %>
+                        <hr class="my-3">
+                        <h6 class="text-muted mb-3">Previous Entries</h6>
+                        <div class="entries-list">
+                            <% @habit.entries.order(entry_date: :desc, created_at: :desc).each do |entry| %>
+                                <div class="entry-item mb-3 p-3 rounded bg-light">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="entry-date">
+                                            <%= entry.entry_date.strftime("%B %d, %Y") %>
+                                        </div>
+                                        <%= button_to habit_entry_path(@habit, entry), 
+                                            method: :delete, 
+                                            class: "btn btn-sm btn-outline-danger entry-delete",
+                                            data: { confirm: "Remove this entry?" } do %>
+                                            <span>&times;</span>
+                                        <% end %>
+                                    </div>
+                                    <p class="entry-content mb-0 mt-2"><%= entry.content %></p>
+                                </div>
+                            <% end %>
+                        </div>
+                    <% else %>
+                        <p class="text-muted text-center py-3 mb-0">
+                            <em>No entries yet. Share your first thought above!</em>
+                        </p>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Settings -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm habit-card card-delay-7">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">🔔 Daily Nudge</h5>
+                    
+                    <% if @habit.reminders_enabled? %>
+                        <p class="card-text mb-3">
+                            <span class="badge bg-success">Enabled</span>
+                            <span class="text-muted ms-2">You'll get a gentle nudge at noon</span>
+                        </p>
+                        <%= button_to "Disable", toggle_reminder_habit_path(@habit), method: :post, class: "btn btn-outline-danger btn-sm" %>
+                    <% else %>
+                        <p class="card-text text-muted mb-3">
+                            Get a friendly reminder if you haven't checked in
+                        </p>
+                        <%= button_to "Enable Daily Nudge", toggle_reminder_habit_path(@habit), method: :post, class: "btn btn-purple btn-sm" %>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row gy-2 mb-4">
+        <div class="col-12">
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <%= button_to "Check In Today", check_in_habit_path(@habit), method: :post, class: "btn btn-primary" %>
+                <%= button_to "Nudge", nudge_habit_path(@habit), method: :post, class: "btn btn-outline-secondary" %>
+                <%= link_to "Back to Habits", habits_path, class: "btn btn-outline-secondary" %>
+            </div>
+        </div>
+    </div>
 </div>
-
-<%= button_to "Check In Today", check_in_habit_path(@habit), method: :post %>
-
-<%= link_to "Back to Habits Page", habits_path %>

@@ -4,12 +4,43 @@
     <div class="d-flex gap-2 mb-4 justify-content-center">
         <%= link_to "Start a New Habit", new_habit_path, class: "btn btn-primary" %>
         <%= button_to "Need a Little Nudge?", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
+        <button id="enable-notifications" class="btn btn-outline-primary" onclick="requestNotificationPermission()">
+            🔔 Enable Nudges
+        </button>
     </div>
 
+    <% if @focus_habit %>
+        <div class="card mb-4 border-primary shadow-sm focus-card">
+            <div class="card-body bg-primary bg-opacity-10">
+                <h5 class="card-title text-primary fw-bold">Today's Main Focus ⭐</h5>
+
+                <p class="fs-5 mb-1">
+                    <%= @focus_habit.icon %> <%= @focus_habit.name %>
+                </p>
+
+                <% if @focus_habit.prompt.present? %>
+                    <p class="text-muted mb-2"><%= @focus_habit.prompt %></p>
+                <% end %>
+
+                <p class="text-muted small mb-2">Current streak: <%= @focus_habit.current_streak %> days</p>
+
+                <%= button_to "Remove Focus", reset_focus_habits_path, method: :post, class: "btn btn-outline-secondary btn-sm" %>
+            </div>
+        </div>
+    <% end %>
+
+    <%# Weekly Progress Summary %>
+    <% if @habits.any? %>
+        <div class="weekly-progress mb-4">
+            <div class="weekly-progress-number"><%= @habits.sum { |h| h.check_ins.where("date >= ?", Date.today - 7.days).count } %></div>
+            <div class="weekly-progress-label">check-ins this week</div>
+        </div>
+    <% end %>
+
     <div class="row gy-3">
-        <% @habits.each do |habit| %>
+        <% @habits.each_with_index do |habit, index| %>
             <div class="col-12">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm habit-card card-delay-<%= [index + 1, 8].min %>">
                     <div class="card-body text-center">
                         
                         <h5 class="card-title fs-4">
@@ -22,7 +53,18 @@
                             Current streak: <%= habit.current_streak %> days
                         </p>
 
-                        <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary w-100" %>
+                        <div class="d-flex gap-2 habit-buttons">
+                            <%= button_to "Check In", check_in_habit_path(habit), method: :post, class: "btn btn-primary flex-fill" %>
+                            <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
+                        </div>
+
+                        <div class="mt-2">
+                            <% if @focus_habit&.id == habit.id %>
+                                <span class="badge bg-primary">Current Focus</span>
+                            <% else %>
+                                <%= button_to "Make Main Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning btn-sm" %>
+                            <% end %>
+                        </div>
                     </div>
                 </div>
             </div>
