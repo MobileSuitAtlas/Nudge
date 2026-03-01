@@ -334,7 +334,8 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 | Feb 28, 2026 | Added Badge/Achievement system |
 | Feb 28, 2026 | Added Dark Mode toggle |
 | Feb 28, 2026 | Added CSV Export feature |
-| Mar 1, 2026 | Consolidated pages - removed today.html.erb, unified check-in with "Mark Done for Today" |
+| Mar 1, 2026 | Consolidated pages - removed today.html.erb, unified check-in with "Mark Done for Today" - Had to revert some Added Features to dive deeper into issues with features implementation |
+| Mar 1, 2026 | Fixed Dark Mode - added toggle button, used Bootstrap 5.3 native data-bs-theme for seamless light/dark switching |
 
 ---
 

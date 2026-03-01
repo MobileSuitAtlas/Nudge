@@ -29,7 +29,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-bs-theme="<%=session[:theme] || 'light' %>">
     <% if flash[:notice] %>
       <div style="
         background-color: #e8f7ff;

@@ -7,6 +7,7 @@
         <button id="enable-notifications" class="btn btn-outline-primary" onclick="requestNotificationPermission()">
             🔔 Enable Nudges
         </button>
+        <%= button_to "🌙" , toggle_theme_path, method: :post, class: "btn btn-outline-secondary", title: "Toggle Dark Mode" %>
     </div>
 
     <% if @focus_habit %>

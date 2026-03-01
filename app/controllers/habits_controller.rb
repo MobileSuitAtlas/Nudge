@@ -181,7 +181,7 @@ class HabitsController < ApplicationController
   def toggle_theme
     current = session[:theme] || "light"
     session[:theme] = current == "light" ? "dark" : "light"
-    redirect_back fallback_location: habits_path
+    redirect_to request.referrer || habits_path
   end
 
   private

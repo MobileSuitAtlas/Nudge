@@ -4,6 +4,108 @@
 // NUDGE - Gentle Habit Builder Styles
 // ============================================
 
+// --------------------------------------------
+// Dark Mode
+// --------------------------------------------
+body.dark {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+}
+
+body.dark .card {
+    background-color: #16213e;
+    border-color: #0f3460;
+    color: #e0e0e0;
+}
+
+body.dark .card-body {
+    color: #e0e0e0;
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: #ffffff;
+}
+
+body.dark .text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.dark .btn-outline-primary {
+    color: #4dabf7;
+    border-color: #4dabf7;
+}
+
+body.dark .btn-outline-primary:hover {
+    background-color: #4dabf7;
+    color: #1a1a2e;
+}
+
+body.dark .btn-outline-secondary {
+    color: #a0a0a0;
+    border-color: #6c757d;
+}
+
+body.dark .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+body.dark .btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+body.dark .btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: #1a1a2e;
+}
+
+body.dark .form-control {
+    background-color: #16213e;
+    border-color: #0f3460;
+    color: #e0e0e0;
+}
+
+body.dark .form-control:focus {
+    background-color: #1a1a2e;
+    border-color: #4dabf7;
+    color: #e0e0e0;
+}
+
+body.dark .btn-primary {
+    background-color: #4dabf7;
+    border-color: #4dabf7;
+    color: #1a1a2e;
+}
+
+body.dark .btn-primary:hover {
+    background-color: #3b8ccf;
+    border-color: #3b8ccf;
+}
+
+body.dark .btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    color: #1a1a2e;
+}
+
+body.dark .weekly-progress {
+    background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+}
+
+body.dark .weekly-progress-label {
+    color: #a0a0a0;
+}
+
+body.dark input::placeholder {
+    color: #6c757d;
+}
+
 // Custom Button Colors
 .btn-purple {
     background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
