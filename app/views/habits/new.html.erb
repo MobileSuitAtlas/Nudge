@@ -1,5 +1,5 @@
 <div class="container my-4">
-    <h1 class="mb-4 text-center">New Habit</h1>
+    <h1 class="mb-4 text-center">New Habits</h1>
 
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -15,24 +15,8 @@
                             <%= form.label :category, "Category", class: "form-label" %>
                             <%= form.select :category,
                                 Habit::TEMPLATES.keys,
-                                { include_blank: "Select a category" },
+                                { include_blank: "Select a catergory" },
                                 class: "form-select" %>
-                        </div>
-
-                        <div class="mb-3">
-                            <%= form.label :tag_ids, "Tags", class: "form-label" %>
-                            <% if Tag.any? %>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <%= collection_check_boxes(:habit, :tag_ids, Tag.all, :id, ->(tag) { "#{tag.name}" }) do |b| %>
-                                        <div class="form-check">
-                                            <%= b.check_box(class: "form-check-input") %>
-                                            <%= b.label(class: "badge", style: "background-color: #{b.object.color};") { b.text } %>
-                                        </div>
-                                    <% end %>
-                                </div>
-                            <% else %>
-                                <small class="text-muted">No tags available. <%= link_to "Create tags first", tags_path %></small>
-                            <% end %>
                         </div>
 
                         <div class="mb-3">
@@ -51,4 +35,5 @@
         </div>
     </div>
 </div>
+                    
 

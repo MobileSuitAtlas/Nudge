@@ -1,133 +1,73 @@
 <div class="container my-4">
     <h1 class="mb-4 text-center">Your Habits :)</h1>
 
-    <div class="d-flex gap-2 mb-4 justify-content-center flex-wrap">
+    <div class="d-flex gap-2 mb-4 justify-content-center">
         <%= link_to "Start a New Habit", new_habit_path, class: "btn btn-primary" %>
         <%= button_to "Need a Little Nudge?", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
         <button id="enable-notifications" class="btn btn-outline-primary" onclick="requestNotificationPermission()">
             🔔 Enable Nudges
         </button>
-        <%= link_to "🌙 Toggle Theme", toggle_theme_path, method: :post, class: "btn btn-outline-secondary" %>
-        <%= link_to "📤 Export Data", export_path, class: "btn btn-outline-info" %>
-        <%= link_to "🏷️ Manage Tags", tags_path, class: "btn btn-outline-primary" %>
     </div>
 
+    <% if @focus_habit %>
+        <div class="card mb-4 border-primary shadow-sm focus-card">
+            <div class="card-body bg-primary bg-opacity-10">
+                <h5 class="card-title text-primary fw-bold">Today's Main Focus ⭐</h5>
+
+                <p class="fs-5 mb-1">
+                    <%= @focus_habit.icon %> <%= @focus_habit.name %>
+                </p>
+
+                <% if @focus_habit.prompt.present? %>
+                    <p class="text-muted mb-2"><%= @focus_habit.prompt %></p>
+                <% end %>
+
+                <p class="text-muted small mb-2">Current streak: <%= @focus_habit.current_streak %> days</p>
+
+                <%= button_to "Remove Focus", reset_focus_habits_path, method: :post, class: "btn btn-outline-secondary btn-sm" %>
+            </div>
+        </div>
+    <% end %>
+
     <%# Weekly Progress Summary %>
-    <% if @habits.any? || (@archived_habits && @archived_habits.any?) %>
+    <% if @habits.any? %>
         <div class="weekly-progress mb-4">
             <div class="weekly-progress-number"><%= @habits.sum { |h| h.check_ins.where("date >= ?", Date.today - 7.days).count } %></div>
             <div class="weekly-progress-label">check-ins this week</div>
         </div>
     <% end %>
 
-    <%# Toggle for archived habits %>
-    <div class="text-center mb-3">
-        <% if @archived_habits && @archived_habits.any? %>
-            <%= link_to "Hide Archived", habits_path, class: "btn btn-outline-secondary btn-sm" %>
-        <% else %>
-            <%= link_to "Show Archived (#{Habit.archived.count})", habits_path(show_archived: true), class: "btn btn-outline-secondary btn-sm" if Habit.archived.any? %>
-        <% end %>
-    </div>
-
     <div class="row gy-3">
         <% @habits.each_with_index do |habit, index| %>
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card shadow-sm habit-card card-delay-<%= [index + 1, 8].min %> h-100">
-                    <div class="card-body text-center d-flex flex-column">
+            <div class="col-12">
+                <div class="card shadow-sm habit-card card-delay-<%= [index + 1, 8].min %>">
+                    <div class="card-body text-center">
                         
                         <h5 class="card-title fs-4">
                             <%= habit.icon %> <%= habit.name %>
                         </h5>
                         <% if habit.prompt.present? %>
-                            <p class="text-muted mb-2 small"><%= habit.prompt %></p>
+                            <p class="text-muted mb-2"><%=habit.prompt %></p>
                         <% end %>
-                        
-                        <%# Tags %>
-                        <% if habit.tags.any? %>
-                            <div class="mb-2">
-                                <% habit.tags.each do |tag| %>
-                                    <span class="badge" style="background-color: <%= tag.color %>;"><%= tag.name %></span>
-                                <% end %>
-                            </div>
-                        <% end %>
-                        
                         <p class="small text-muted mb-2">
-                            🔥 Streak: <%= habit.current_streak %> days | Best: <%= habit.longest_streak %>
+                            Current streak: <%= habit.current_streak %> days
                         </p>
 
-                        <%# Badges %>
-                        <% if habit.badges.any? %>
-                            <div class="mb-2">
-                                <% habit.badges.each do |badge| %>
-                                    <span class="badge bg-warning text-dark" title="<%= badge.description %>"><%= badge.icon %></span>
-                                <% end %>
-                            </div>
-                        <% end %>
-
-                        <div class="d-flex gap-2 habit-buttons mt-auto">
+                        <div class="d-flex gap-2 habit-buttons">
                             <%= button_to "Check In", check_in_habit_path(habit), method: :post, class: "btn btn-primary flex-fill" %>
-                            <%= link_to "View", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
+                            <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
                         </div>
 
-                        <div class="d-flex gap-2 mt-2 justify-content-center">
+                        <div class="mt-2">
                             <% if @focus_habit&.id == habit.id %>
-                                <span class="badge bg-primary">⭐ Current Focus</span>
+                                <span class="badge bg-primary">Current Focus</span>
                             <% else %>
-                                <%= button_to "⭐ Focus", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning btn-sm" %>
+                                <%= button_to "Make Main Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning btn-sm" %>
                             <% end %>
-                            <%= button_to "📁 Archive", archive_habit_path(habit), method: :post, class: "btn btn-outline-secondary btn-sm", data: { confirm: "Archive this habit? Your data will be preserved." } %>
                         </div>
                     </div>
                 </div>
             </div>
         <% end %>
     </div>
-
-    <%# Archived Habits Section %>
-    <% if @show_archived && @archived_habits && @archived_habits.any? %>
-        <h3 class="mt-5 mb-3 text-center text-muted">Archived Habits</h3>
-        <div class="row gy-3">
-            <% @archived_habits.each_with_index do |habit, index| %>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card shadow-sm habit-card h-100 border-secondary">
-                        <div class="card-body text-center d-flex flex-column opacity-75">
-                            
-                            <h5 class="card-title fs-4 text-muted">
-                                <%= habit.icon %> <%= habit.name %>
-                            </h5>
-                            
-                            <% if habit.tags.any? %>
-                                <div class="mb-2">
-                                    <% habit.tags.each do |tag| %>
-                                        <span class="badge" style="background-color: <%= tag.color %>;"><%= tag.name %></span>
-                                    <% end %>
-                                </div>
-                            <% end %>
-                            
-                            <p class="small text-muted mb-2">
-                                🔥 Final Streak: <%= habit.longest_streak %> days | Check-ins: <%= habit.total_check_ins %>
-                            </p>
-
-                            <% if habit.badges.any? %>
-                                <div class="mb-2">
-                                    <% habit.badges.each do |badge| %>
-                                        <span class="badge bg-warning text-dark"><%= badge.icon %></span>
-                                    <% end %>
-                                </div>
-                            <% end %>
-
-                            <div class="d-flex gap-2 habit-buttons mt-auto">
-                                <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
-                                <%= button_to "Restore", unarchive_habit_path(habit), method: :post, class: "btn btn-outline-success flex-fill" %>
-                            </div>
-                            
-                            <div class="mt-2">
-                                <small class="text-muted">Archived <%= habit.archived_at.strftime("%b %d, %Y") if habit.archived_at %></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <% end %>
-        </div>
-    <% end %>
 </div>
