@@ -186,7 +186,7 @@ Nudge/
 
 | URL | Method | Action | Description |
 |-----|--------|--------|-------------|
-| `/` or `/today` | GET | today | Home - Today's habits |
+| `/` | GET | index | Home - All habits with check-ins |
 | `/habits` | GET | index | List all habits |
 | `/habits/new` | GET | new | Create habit form |
 | `/habits` | POST | create | Create new habit |
@@ -334,6 +334,7 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 | Feb 28, 2026 | Added Badge/Achievement system |
 | Feb 28, 2026 | Added Dark Mode toggle |
 | Feb 28, 2026 | Added CSV Export feature |
+| Mar 1, 2026 | Consolidated pages - removed today.html.erb, unified check-in with "Mark Done for Today" |
 
 ---
 

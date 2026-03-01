@@ -145,7 +145,6 @@
     <div class="row gy-2 mb-4">
         <div class="col-12">
             <div class="d-flex gap-2 justify-content-center flex-wrap">
-                <%= button_to "Check In Today", check_in_habit_path(@habit), method: :post, class: "btn btn-primary" %>
                 <%= button_to "Nudge", nudge_habit_path(@habit), method: :post, class: "btn btn-outline-secondary" %>
                 <%= link_to "Back to Habits", habits_path, class: "btn btn-outline-secondary" %>
             </div>

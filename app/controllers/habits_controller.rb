@@ -4,11 +4,19 @@ class HabitsController < ApplicationController
     @show_archived = params[:show_archived] == "true"
     @archived_habits = Habit.archived if @show_archived
 
-    # Load focus habit from session if set for today, or default to first habit
+    # Load focus habit from session if set for today
     if session[:focus_habit_date] == Date.today && session[:focus_habit_id].present?
       @focus_habit = Habit.find_by(id: session[:focus_habit_id])
-    elsif session[:focus_habit_date] != Date.today && @habits.any?
-      # Auto-select first habit if no focus set for today
+      # If focus habit was archived or deleted, clear it
+      if @focus_habit.nil? || @focus_habit.archived?
+        session[:focus_habit_id] = nil
+        session[:focus_habit_date] = nil
+      end
+    end
+
+    # Auto-select first habit only if no focus is set and no habits existed before
+    # (checks if focus was explicitly cleared vs never set)
+    if @focus_habit.nil? && @habits.any? && session[:focus_habit_id].nil?
       session[:focus_habit_id] = @habits.first.id
       session[:focus_habit_date] = Date.today
       @focus_habit = @habits.first
@@ -91,7 +99,7 @@ class HabitsController < ApplicationController
     session[:focus_habit_id] = params[:id]
     session[:focus_habit_date] = Date.today
     flash[:notice] = "Focus updated for today!"
-    redirect_back fallback_location: habits_path
+    redirect_to "/" # goes to today page which is root
   end
 
   def reset_focus
@@ -114,13 +122,23 @@ class HabitsController < ApplicationController
 
   def today
     @habits = Habit.active
-    # If no focus is set yet, default to the first habit
-    if session[:focus_habit_date] == Date.today || session[:focus_habit_id].blank?
-      session[:focus_habit_id] = @habits.first&.id
-      session[:focus_habit_date] = Date.today
+
+    # Load focus habit from session if set for today
+    if session[:focus_habit_date] == Date.today && session[:focus_habit_id].present?
+      @focus_habit = Habit.find_by(id: session[:focus_habit_id])
+      # If focus habit was archived or deleted, clear it
+      if @focus_habit.nil? || @focus_habit.archived?
+        session[:focus_habit_id] = nil
+        session[:focus_habit_date] = nil
+      end
     end
 
-    @focus_habit = Habit.find_by(id: session[:focus_habit_id])
+    # Auto-select first habit only if no focus is set
+    if @focus_habit.nil? && @habits.any? && session[:focus_habit_id].nil?
+      session[:focus_habit_id] = @habits.first.id
+      session[:focus_habit_date] = Date.today
+      @focus_habit = @habits.first
+    end
   end
 
   # Export for CSV

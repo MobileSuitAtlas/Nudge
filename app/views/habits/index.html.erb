@@ -3,7 +3,7 @@
 
     <div class="d-flex gap-2 mb-4 justify-content-center">
         <%= link_to "Start a New Habit", new_habit_path, class: "btn btn-primary" %>
-        <%= button_to "Need a Little Nudge?", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
+        <%= button_to "In case you need a little Nudge :D", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
         <button id="enable-notifications" class="btn btn-outline-primary" onclick="requestNotificationPermission()">
             🔔 Enable Nudges
         </button>
@@ -39,6 +39,8 @@
 
     <div class="row gy-3">
         <% @habits.each_with_index do |habit, index| %>
+            <% checked_in_today = habit.check_ins.exists?(date: Date.today) %>
+            
             <div class="col-12">
                 <div class="card shadow-sm habit-card card-delay-<%= [index + 1, 8].min %>">
                     <div class="card-body text-center">
@@ -54,7 +56,11 @@
                         </p>
 
                         <div class="d-flex gap-2 habit-buttons">
-                            <%= button_to "Check In", check_in_habit_path(habit), method: :post, class: "btn btn-primary flex-fill" %>
+                            <% if checked_in_today %>
+                                <span class="text-success fw-bold flex-fill d-flex align-items-center justify-content-center">Done already? Awesome job today! :D</span>
+                            <% else %>
+                                <%= button_to "Mark Done for Today", check_in_habit_path(habit), method: :post, class: "btn btn-success flex-fill" %>
+                            <% end %>
                             <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
                             <% if @focus_habit&.id == habit.id %>
                                 <span class="badge bg-primary d-flex align-items-center px-3">⭐ Focused</span>
