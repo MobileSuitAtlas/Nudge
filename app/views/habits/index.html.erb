@@ -56,13 +56,10 @@
                         <div class="d-flex gap-2 habit-buttons">
                             <%= button_to "Check In", check_in_habit_path(habit), method: :post, class: "btn btn-primary flex-fill" %>
                             <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
-                        </div>
-
-                        <div class="mt-2">
                             <% if @focus_habit&.id == habit.id %>
-                                <span class="badge bg-primary">Current Focus</span>
+                                <span class="badge bg-primary d-flex align-items-center px-3">⭐ Focused</span>
                             <% else %>
-                                <%= button_to "Make Main Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning btn-sm" %>
+                                <%= button_to "Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning flex-fill" %>
                             <% end %>
                         </div>
                     </div>

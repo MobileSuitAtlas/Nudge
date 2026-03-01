@@ -4,9 +4,14 @@ class HabitsController < ApplicationController
     @show_archived = params[:show_archived] == "true"
     @archived_habits = Habit.archived if @show_archived
 
-    # Load focus habit from session if set for today
+    # Load focus habit from session if set for today, or default to first habit
     if session[:focus_habit_date] == Date.today && session[:focus_habit_id].present?
       @focus_habit = Habit.find_by(id: session[:focus_habit_id])
+    elsif session[:focus_habit_date] != Date.today && @habits.any?
+      # Auto-select first habit if no focus set for today
+      session[:focus_habit_id] = @habits.first.id
+      session[:focus_habit_date] = Date.today
+      @focus_habit = @habits.first
     end
   end
 
@@ -120,12 +125,12 @@ class HabitsController < ApplicationController
 
   # Export for CSV
   def export
-    require 'csv'
+    require "csv"
 
     habits = Habit.active.includes(:check_ins, :entries, :tags, :badges)
 
     csv_data = CSV.generate(headers: true) do |csv|
-      csv << ["Habit", "Category", "Tags", "Streaks", "Longest Streak", "Date", "Status", "Entry"]
+      csv << [ "Habit", "Category", "Tags", "Streaks", "Longest Streak", "Date", "Status", "Entry" ]
 
       habits.each do |habit|
         dates = habit.check_ins.pluck(:date)
@@ -147,17 +152,17 @@ class HabitsController < ApplicationController
 
     send_data csv_data,
       filename: "habit_builder_export_#{Date.today}.csv",
-      type: 'text/csv'
+      type: "text/csv"
   end
 
   def show
     @habit = Habit.find(params[:id])
   end
 
-  #Dark/Light Mode Toggle
+  # Dark/Light Mode Toggle
   def toggle_theme
-    current = session[:theme] || 'light'
-    session[:theme] = current == 'light' ? 'dark' : 'light'
+    current = session[:theme] || "light"
+    session[:theme] = current == "light" ? "dark" : "light"
     redirect_back fallback_location: habits_path
   end
 
