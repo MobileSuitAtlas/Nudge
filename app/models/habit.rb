@@ -1,6 +1,11 @@
 class Habit < ApplicationRecord
     has_many :check_ins, dependent: :destroy
     has_many :entries, dependent: :destroy
+    has_many :earned_badges, dependent: :destroy
+    has_many :badges, dependent: :destroy
+    has_and_belongs_to_many :tags 
+    scope :active, -> { where(archived: false)}
+    scope :archived, -> { where(archived: true)}
 
     def current_streak
         streak = 0
@@ -159,6 +164,27 @@ class Habit < ApplicationRecord
     def recent_entries(limit = 10)
         entries.order(entry_date: :desc, created_at: :desc).limit(limit)
     end
+
+    # Archived/Unarchived method
+    def archive!
+        update(archived: true, archived_at: Time.current)
+    end
+
+    def unarchive!
+        update(archived: false, archived_at: nil)
+    end
+
+    # Badge checking method
+    def check_and_award_badges!
+        Badge.all.each do |badge|
+            next if earned_badges.exists?(badge_id: badge.id)
+
+            if longest_streak >= badge.requirement_days
+                earned_badges.create!(badge: badge, earned_at: Time.current)
+            end
+        end
+    end
+
 
     # Get entry for a specific date
     def entry_for_date(date)

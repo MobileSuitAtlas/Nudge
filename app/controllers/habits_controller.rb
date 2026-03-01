@@ -1,6 +1,9 @@
 class HabitsController < ApplicationController
   def index
-    @habits = Habit.all
+    @habits = Habit.active
+    @show_archived = params[:show_archived] == "true"
+    @archived_habits = Habit.archived if @show_archived
+
     # Load focus habit from session if set for today
     if session[:focus_habit_date] == Date.today && session[:focus_habit_id].present?
       @focus_habit = Habit.find_by(id: session[:focus_habit_id])
@@ -12,6 +15,7 @@ class HabitsController < ApplicationController
     check_in = habit.check_ins.find_or_create_by(date: Date.today)
 
     if check_in.persisted?
+      habit.check_and_award_badges!
       flash[:notice] = "Checked in for today! Keep up the great work!"
     else
       flash[:notice] = habit.encouragement_message
@@ -37,6 +41,19 @@ class HabitsController < ApplicationController
     @habit = Habit.find(params[:id])
     @habit.destroy
     redirect_to habits_path
+  end
+
+  # Archive/Unarchive methods
+  def archive
+    habit = Habit.find(params[:id])
+    habit.archive!
+    redirect_to habits_path, notice: "Habit archived"
+  end
+
+  def unarchive
+    habit = Habit.find(params[:id])
+    habit.unarchive!
+    redirect_to habits_path, notice: "Habit has been restored"
   end
 
   def nudge
@@ -91,7 +108,7 @@ class HabitsController < ApplicationController
   end
 
   def today
-    @habits = Habit.all
+    @habits = Habit.active
     # If no focus is set yet, default to the first habit
     if session[:focus_habit_date] == Date.today || session[:focus_habit_id].blank?
       session[:focus_habit_id] = @habits.first&.id
@@ -101,13 +118,52 @@ class HabitsController < ApplicationController
     @focus_habit = Habit.find_by(id: session[:focus_habit_id])
   end
 
+  # Export for CSV
+  def export
+    require 'csv'
+
+    habits = Habit.active.includes(:check_ins, :entries, :tags, :badges)
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ["Habit", "Category", "Tags", "Streaks", "Longest Streak", "Date", "Status", "Entry"]
+
+      habits.each do |habit|
+        dates = habit.check_ins.pluck(:date)
+        dates.each do |date|
+          entry = habit.entries.find_by(entry_date: date)
+          csv << [
+            habit.name,
+            habit.category,
+            habit.tags.pluck(:name).join(","),
+            habit.current_streak,
+            habit.longest_streak,
+            date,
+            "✓",
+            entry&.content
+          ]
+        end
+      end
+    end
+
+    send_data csv_data,
+      filename: "habit_builder_export_#{Date.today}.csv",
+      type: 'text/csv'
+  end
+
   def show
     @habit = Habit.find(params[:id])
+  end
+
+  #Dark/Light Mode Toggle
+  def toggle_theme
+    current = session[:theme] || 'light'
+    session[:theme] = current == 'light' ? 'dark' : 'light'
+    redirect_back fallback_location: habits_path
   end
 
   private
 
   def habits_params
-    params.require(:habit).permit(:name, :description, :category, :prompt, :reminder_time, :reminders_enabled)
+    params.require(:habit).permit(:name, :description, :category, :prompt, :reminder_time, :reminders_enabled, :tag_ids)
   end
 end

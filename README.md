@@ -16,12 +16,30 @@ The goal isn't to keep using the app forever. The best outcome? One day drop it,
 - **Streak System** - Track consecutive days of completion (current & longest)
 - **Focus Habit** - Set one habit as today's main focus ⭐
 - **Journal Entries** - Write thoughts, progress, and inspiration for each habit
+- **Archive Habits** - Pause habits without deleting (keep all history!)
+- **Colored Tags** - Organize habits with custom tags (Health, Fitness, Learning, etc.)
+
+### Badge System
+- **Achievement Badges** - Earn badges for hitting streak milestones
+- **Available Badges:**
+  - 🌱 Week Warrior (7 days)
+  - 🔥 Fortnight Force (14 days)
+  - ⚡ Three Week Thunder (21 days)
+  - 🏆 Monthly Master (30 days)
+  - 👑 Quarterly Quest (90 days)
+  - 💎 Century Club (100 days)
+  - 🌟 Year Champion (365 days)
 
 ### Encouragement System
 - **Daily Nudges** - Toggle gentle noon reminders
 - **Streak Messages** - Personalized messages based on streak length
 - **Milestone Celebrations** - Special messages at 7, 14, 21, 28, and 30 days
+- **Badge Rewards** - Earn visual badges for achievements
 - **No Negative Reinforcement** - Only positive, supporting messages
+
+### User
+- **Dark Mode** - Toggle Preferences between light and dark themes
+- **Data Export** - Download all habit data as CSV
 
 ### Categories
 Choose from preset categories or create custom habits:
@@ -30,6 +48,15 @@ Choose from preset categories or create custom habits:
 - 💪 Workout
 - 🎨 Drawing
 - Custom (anything you want!)
+
+### Tags
+Organize habits with colored tags:
+- 🔴 Health (red)
+- 🟢 Fitness (teal)
+- 🔵 Learning (blue)
+- 🟣 Creative (purple)
+- 🟡 Productivity (yellow)
+- 🩷 Mindfulness (pink)
 
 ---
 
@@ -94,6 +121,39 @@ Nudge/
 ├── app/
 │   ├── controllers/
 │   │   ├── habits_controller.rb       # All habit actions
+│   │   ├── entries_controller.rb      # Journal entries
+│   │   └── tags_controller.rb        # Tag management
+│   ├── models/
+│   │   ├── habit.rb                   # Habit logic, streaks, nudges
+│   │   ├── check_in.rb               # Daily completion tracking
+│   │   ├── entry.rb                   # Journal entries
+│   │   ├── tag.rb                     # Colored tags
+│   │   ├── badge.rb                   # Achievement badges
+│   │   └── earned_badge.rb            # Earned badges (join table)
+│   ├── views/
+│   │   └── habits/
+│   │       ├── index.html.erb         # List all habits
+│   │       ├── today.html.erb         # Today's view with check-ins
+│   │       ├── show.html.erb          # Habit details, stats, entries
+│   │       └── new.html.erb          # Create new habit form
+│   └── javascript/
+│       └── nudge_app/
+│   ├── handling
+├── config.js               # Notification routes.rb                      # URL routes
+│   └── schedule.rb                    # Cron schedule├── db/
+│   ├── migrations/ for nudges
+                    # Database migrations
+│   └── schema.rb                      # Database structure
+├── lib/tasks/
+│   └── nudge.rake                     # Nudge scheduler task
+└── public/
+    ├── manifest.json                  # PWA manifest
+    └── icon.png                      # App icon
+```
+Nudge/
+├── app/
+│   ├── controllers/
+│   │   ├── habits_controller.rb       # All habit actions
 │   │   └── entries_controller.rb     # Journal entries
 │   ├── models/
 │   │   ├── habit.rb                   # Habit logic, streaks, nudges
@@ -131,13 +191,23 @@ Nudge/
 | `/habits/new` | GET | new | Create habit form |
 | `/habits` | POST | create | Create new habit |
 | `/habits/:id` | GET | show | View habit details & entries |
+| `/habits/:id` | PATCH | update | Update habit |
+| `/habits/:id` | DELETE | destroy | Delete habit |
 | `/habits/:id/check_in` | POST | check_in | Mark done for today |
 | `/habits/:id/nudge` | POST | nudge | Get encouragement |
 | `/habits/:id/set_focus` | POST | set_focus | Set today's focus |
 | `/habits/:id/toggle_reminder` | POST | toggle_reminder | Enable/disable daily nudge |
+| `/habits/:id/archive` | POST | archive | Archive a habit |
+| `/habits/:id/unarchive` | POST | unarchive | Restore an archived habit |
 | `/habits/reset_focus` | POST | reset_focus | Clear focus |
 | `/habits/:id/entries` | POST | create | Add journal entry |
 | `/habits/:id/entries/:id` | DELETE | destroy | Delete journal entry |
+| `/tags` | GET | index | List all tags |
+| `/tags` | POST | create | Create new tag |
+| `/tags/:id` | PATCH | update | Update tag |
+| `/tags/:id` | DELETE | destroy | Delete tag |
+| `/toggle_theme` | POST | toggle_theme | Toggle dark/light mode |
+| `/export` | GET | export | Download data as CSV |
 
 ---
 
@@ -152,7 +222,46 @@ Nudge/
 | prompt | string | Custom reminder message |
 | reminder_time | time | Time for daily nudge (default: 12:00 PM) |
 | reminders_enabled | boolean | Whether nudges are enabled |
+| archived | boolean | Whether habit is archived |
+| archived_at | datetime | When habit was archived |
 | created_at | datetime | When habit was created |
+| updated_at | datetime | Last update |
+
+### tags table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| name | string | Tag name (Health, Fitness, etc.) |
+| color | string | Hex color code |
+| created_at | datetime | When tag was created |
+| updated_at | datetime | Last update |
+
+### habit_tags table (join)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| habit_id | bigint | Foreign key to habits |
+| tag_id | bigint | Foreign key to tags |
+
+### badges table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| name | string | Badge name |
+| icon | string | Emoji icon |
+| description | text | Badge description |
+| requirement_days | integer | Days needed to earn |
+| created_at | datetime | When badge was created |
+| updated_at | datetime | Last update |
+
+### earned_badges table
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| habit_id | bigint | Foreign key to habits |
+| badge_id | bigint | Foreign key to badges |
+| earned_at | datetime | When badge was earned |
+| created_at | datetime | When record was created |
 | updated_at | datetime | Last update |
 
 ### check_ins table
@@ -220,6 +329,11 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 | Feb 27, 2026 | Added PWA manifest for mobile install |
 | Feb 27, 2026 | Added Journal Entries feature |
 | Feb 27, 2026 | Added simple daily nudge (one button, noon default) |
+| Feb 28, 2026 | Added Archive/Unarchive habits feature |
+| Feb 28, 2026 | Added Tags system with colored tags |
+| Feb 28, 2026 | Added Badge/Achievement system |
+| Feb 28, 2026 | Added Dark Mode toggle |
+| Feb 28, 2026 | Added CSV Export feature |
 
 ---
 
@@ -228,6 +342,8 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 - 🔔 **Push Notifications** - Web Push API integration for actual notifications
 - 📊 **Statistics** - Charts and progress visualization
 - 👥 **User Accounts** - Sync across devices
+- 📅 **Calendar View** - Visual calendar of completions
+- 🔄 **Habit Duplication** - Clone existing habits
 
 ---
 
