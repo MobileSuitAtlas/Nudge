@@ -3,9 +3,9 @@ class Habit < ApplicationRecord
     has_many :entries, dependent: :destroy
     has_many :earned_badges, dependent: :destroy
     has_many :badges, dependent: :destroy
-    has_and_belongs_to_many :tags 
-    scope :active, -> { where(archived: false)}
-    scope :archived, -> { where(archived: true)}
+    has_and_belongs_to_many :tags
+    scope :active, -> { where("archived IS NULL OR archived = ?", false) }
+    scope :archived, -> { where(archived: true) }
 
     def current_streak
         streak = 0
