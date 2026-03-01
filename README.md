@@ -120,64 +120,50 @@ Organize habits with colored tags:
 Nudge/
 ├── app/
 │   ├── controllers/
-│   │   ├── habits_controller.rb       # All habit actions
+│   │   ├── habits_controller.rb       # All habit CRUD, check-ins, focus
 │   │   ├── entries_controller.rb      # Journal entries
-│   │   └── tags_controller.rb        # Tag management
+│   │   ├── tags_controller.rb         # Tag management
+│   │   └── application_controller.rb # Base controller
 │   ├── models/
-│   │   ├── habit.rb                   # Habit logic, streaks, nudges
+│   │   ├── habit.rb                  # Habit logic, streaks, nudges
 │   │   ├── check_in.rb               # Daily completion tracking
-│   │   ├── entry.rb                   # Journal entries
-│   │   ├── tag.rb                     # Colored tags
-│   │   ├── badge.rb                   # Achievement badges
-│   │   └── earned_badge.rb            # Earned badges (join table)
-│   ├── views/
-│   │   └── habits/
-│   │       ├── index.html.erb         # List all habits
-│   │       ├── today.html.erb         # Today's view with check-ins
-│   │       ├── show.html.erb          # Habit details, stats, entries
-│   │       └── new.html.erb          # Create new habit form
-│   └── javascript/
-│       └── nudge_app/
-│   ├── handling
-├── config.js               # Notification routes.rb                      # URL routes
-│   └── schedule.rb                    # Cron schedule├── db/
-│   ├── migrations/ for nudges
-                    # Database migrations
-│   └── schema.rb                      # Database structure
-├── lib/tasks/
-│   └── nudge.rake                     # Nudge scheduler task
-└── public/
-    ├── manifest.json                  # PWA manifest
-    └── icon.png                      # App icon
-```
-Nudge/
-├── app/
-│   ├── controllers/
-│   │   ├── habits_controller.rb       # All habit actions
-│   │   └── entries_controller.rb     # Journal entries
-│   ├── models/
-│   │   ├── habit.rb                   # Habit logic, streaks, nudges
-│   │   ├── check_in.rb                # Daily completion tracking
-│   │   └── entry.rb                   # Journal entries
-│   ├── views/
-│   │   └── habits/
-│   │       ├── index.html.erb         # List all habits
-│   │       ├── today.html.erb         # Today's view with check-ins
-│   │       ├── show.html.erb          # Habit details, stats, entries
-│   │       └── new.html.erb           # Create new habit form
-│   └── javascript/
-│       └── nudge_app.js               # Notification handling
+│   │   ├── entry.rb                  # Journal entries
+│   │   ├── tag.rb                    # Colored tags
+│   │   ├── badge.rb                  # Achievement badges
+│   │   ├── earned_badge.rb           # Earned badges (join table)
+│   │   └── application_record.rb     # Base model
+│   ├── views/habits/
+│   │   ├── index.html.erb            # List all habits
+│   │   ├── show.html.erb             # Habit details, stats, entries
+│   │   └── new.html.erb              # Create new habit form
+│   ├── helpers/
+│   │   ├── habits_helper.rb          # Habit view helpers
+│   │   └── application_helper.rb     # Base helpers
+│   ├── mailers/
+│   │   └── application_mailer.rb     # Base mailer
+│   ├── jobs/
+│   │   ├── application_job.rb        # Base job
+│   │   └── send_nudge_job.rb         # Background nudge sending
+│   └── javascript/controllers/       # Stimulus JS controllers
 ├── config/
-│   ├── routes.rb                      # URL routes
-│   └── schedule.rb                    # Cron schedule for nudges
+│   ├── routes.rb                     # URL routes
+│   ├── schedule.rb                   # Cron schedule for nudges
+│   ├── application.rb                # Rails application config
+│   ├── importmap.rb                  # JavaScript imports
+│   └── puma.rb                       # Web server config
 ├── db/
-│   ├── migrations/                    # Database migrations
-│   └── schema.rb                      # Database structure
+│   ├── migrations/                   # Database migrations
+│   ├── schema.rb                     # Database structure
+│   └── seeds.rb                      # Sample data
 ├── lib/tasks/
-│   └── nudge.rake                     # Nudge scheduler task
-└── public/
-    ├── manifest.json                  # PWA manifest
-    └── icon.png                      # App icon
+│   └── nudge.rake                    # Nudge scheduler task
+├── public/
+│   ├── manifest.json                 # PWA manifest
+│   ├── icon.png                      # App icon (PNG)
+│   └── icon.svg                      # App icon (SVG)
+├── test/                             # Test files
+├── .github/workflows/                # CI/CD workflows
+└── .kamal/                           # Kamal deployment config
 ```
 
 ---
