@@ -51,9 +51,26 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-12">
+        
+        <div class="col-md-6">
             <div class="card shadow-sm habit-card card-delay-5">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-muted">Tags</h6>
+                    <% if @habit.tags.any? %>
+                        <div class="d-flex gap-1 justify-content-center flex-wrap">
+                            <% @habit.tags.each do |tag| %>
+                                <span class="badge" style="background-color: <%= tag.color %>;"><%= tag.name %></span>
+                            <% end %>
+                        </div>
+                    <% else %>
+                        <p class="card-text text-muted">No tags</p>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm habit-card card-delay-6">
                 <div class="card-body text-center">
                     <h6 class="card-title text-muted">Last Check-In</h6>
                     <p class="card-text fs-4 fw-bold"><%= @habit.check_ins.order(date: :desc).limit(1).pluck(:date).first || "None Yet" %></p>
@@ -61,6 +78,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Badges Section -->
+    <% if @habit.badges.any? %>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm bg-warning bg-opacity-25">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-3">🏆 Earned Badges</h5>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <% @habit.badges.each do |badge| %>
+                                <span class="badge bg-warning text-dark fs-6 p-2" title="<%= badge.description %>">
+                                    <%= badge.icon %> <%= badge.name %>
+                                </span>
+                            <% end %>
+                        </div>
+                        <small class="text-muted d-block mt-2">Earned on <%= @habit.earned_badges.first.earned_at.strftime("%B %d, %Y") if @habit.earned_badges.any? %></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% end %>
 
     <!-- Journal Entries Section -->
     <div class="row mb-4">
@@ -147,6 +185,11 @@
             <div class="d-flex gap-2 justify-content-center flex-wrap">
                 <%= button_to "Check In Today", check_in_habit_path(@habit), method: :post, class: "btn btn-primary" %>
                 <%= button_to "Nudge", nudge_habit_path(@habit), method: :post, class: "btn btn-outline-secondary" %>
+                <% if @habit.archived? %>
+                    <%= button_to "Restore Habit", unarchive_habit_path(@habit), method: :post, class: "btn btn-outline-success" %>
+                <% else %>
+                    <%= button_to "Archive Habit", archive_habit_path(@habit), method: :post, class: "btn btn-outline-secondary", data: { confirm: "Archive this habit? Your data will be preserved." } %>
+                <% end %>
                 <%= link_to "Back to Habits", habits_path, class: "btn btn-outline-secondary" %>
             </div>
         </div>

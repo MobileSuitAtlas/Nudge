@@ -131,3 +131,35 @@
         width: 100%;
     }
 }
+
+// --------------------------------------------
+// Dark Mode Support
+// --------------------------------------------
+[data-bs-theme="dark"] {
+    .weekly-progress {
+        background: linear-gradient(135deg, #2d3136 0%, #1a1d20 100%);
+    }
+    
+    .weekly-progress-number {
+        color: #4ade80;
+    }
+    
+    .weekly-progress-label {
+        color: #9ca3af;
+    }
+    
+    .focus-card {
+        background-color: var(--bs-tertiary-bg) !important;
+    }
+    
+    .habit-card {
+        background-color: var(--bs-body-bg);
+    }
+    
+    // Make flash notices work in dark mode
+    .alert-info {
+        background-color: rgba(13, 110, 253, 0.2);
+        border-color: rgba(13, 110, 253, 0.3);
+        color: var(--bs-light);
+    }
+}
