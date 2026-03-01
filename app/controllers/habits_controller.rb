@@ -98,7 +98,7 @@ class HabitsController < ApplicationController
     session[:focus_habit_id] = nil
     session[:focus_habit_date] = nil
     flash[:notice] = "Focus cleared!"
-    redirect_to today_habits_path
+    redirect_to habits_path
   end
 
   def update
