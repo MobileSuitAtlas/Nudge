@@ -134,6 +134,7 @@ Nudge/
 │   │   └── application_record.rb     # Base model
 │   ├── views/habits/
 │   │   ├── index.html.erb            # List all habits
+│   │   ├── edit.html.erb             # Edit habit form
 │   │   ├── show.html.erb             # Habit details, stats, entries
 │   │   └── new.html.erb              # Create new habit form
 │   ├── helpers/
@@ -175,6 +176,7 @@ Nudge/
 | `/` | GET | index | Home - All habits with check-ins |
 | `/habits` | GET | index | List all habits |
 | `/habits/new` | GET | new | Create habit form |
+| `/habits/:id/edit` | GET | edit | Edit habit form |
 | `/habits` | POST | create | Create new habit |
 | `/habits/:id` | GET | show | View habit details & entries |
 | `/habits/:id` | PATCH | update | Update habit |
@@ -300,6 +302,21 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 
 ---
 
+## Tests
+
+This project includes model tests for Habit validations and streak logic.
+
+### Running Tests
+```bash
+rails test                 # Run all tests
+rails test test/models/habit_test.rb  # Run model tests only
+```
+
+### Test Coverage
+- **Habit Model** - Validations (name required), streak calculations (current & longest), broken streak handling
+
+---
+
 ## Development History
 
 | Date | Change |
@@ -307,21 +324,12 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 | Feb 2, 2026 | Project started - basic habit CRUD |
 | Feb 3-6, 2026 | Added controller, routes, title & description |
 | Feb 7, 2026 | Added streak system |
-| Feb 8, 2026 | Added encouragement messages, fixed bug with nested classes |
-| Feb 8, 2026 | Added delete button |
+| Feb 8, 2026 | Added encouragement messages, fixed bug with nested classes, added delete button |
 | Feb 23, 2026 | Added category and prompt fields |
-| Feb 26, 2026 | Fixed index page errors, added nudges |
-| Feb 26, 2026 | Added Focus section to index with "Make Main Focus" button |
-| Feb 27, 2026 | Added PWA manifest for mobile install |
-| Feb 27, 2026 | Added Journal Entries feature |
-| Feb 27, 2026 | Added simple daily nudge (one button, noon default) |
-| Feb 28, 2026 | Added Archive/Unarchive habits feature |
-| Feb 28, 2026 | Added Tags system with colored tags |
-| Feb 28, 2026 | Added Badge/Achievement system |
-| Feb 28, 2026 | Added Dark Mode toggle |
-| Feb 28, 2026 | Added CSV Export feature |
-| Mar 1, 2026 | Consolidated pages - removed today.html.erb, unified check-in with "Mark Done for Today" - Had to revert some Added Features to dive deeper into issues with features implementation |
-| Mar 1, 2026 | Fixed Dark Mode - added toggle button, used Bootstrap 5.3 native data-bs-theme for seamless light/dark switching |
+| Feb 26, 2026 | Fixed index page errors, added nudges, added Focus section to index with "Make Main Focus" button |
+| Feb 27, 2026 | Added PWA manifest for mobile install, Journal Entries feature, and simple daily nudge (one button, noon default) |
+| Feb 28, 2026 | Added Archive/Unarchive habits feature, Tags system with colored tags, Badge/Achievement system, Dark Mode toggle, and CSV Export feature |
+| Mar 1, 2026 | Consolidated pages, fixed Dark Mode, fixed encouragement_message elsif bug, fixed badges association (has_many through), added edit view and controller action, added Habit model validations, added index on check_ins.date, added model tests for validations and streaks |
 
 ---
 
