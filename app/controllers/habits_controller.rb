@@ -15,7 +15,6 @@ class HabitsController < ApplicationController
     end
 
     # Auto-select first habit only if no focus is set and no habits existed before
-    # (checks if focus was explicitly cleared vs never set)
     if @focus_habit.nil? && @habits.any? && session[:focus_habit_id].nil?
       session[:focus_habit_id] = @habits.first.id
       session[:focus_habit_date] = Date.today
@@ -69,6 +68,7 @@ class HabitsController < ApplicationController
     redirect_to habits_path, notice: "Habit has been restored"
   end
 
+  # Nudge method
   def nudge
     habit = Habit.find(params[:id])
     if habit.milestone_message
@@ -79,6 +79,7 @@ class HabitsController < ApplicationController
     redirect_back fallback_location: habits_path
   end
 
+  # Reminder for API
   def toggle_reminder
     habit = Habit.find(params[:id])
 
@@ -94,12 +95,12 @@ class HabitsController < ApplicationController
 
     redirect_back fallback_location: habit_path(habit)
   end
-
+  
   def set_focus
     session[:focus_habit_id] = params[:id]
     session[:focus_habit_date] = Date.today
     flash[:notice] = "Focus updated for today!"
-    redirect_to "/" # goes to today page which is root
+    redirect_to "/"
   end
 
   def reset_focus
