@@ -2,10 +2,11 @@ class Habit < ApplicationRecord
     has_many :check_ins, dependent: :destroy
     has_many :entries, dependent: :destroy
     has_many :earned_badges, dependent: :destroy
-    has_many :badges, dependent: :destroy
+    has_many :badges, through: :earned_badges
     has_and_belongs_to_many :tags
     scope :active, -> { where("archived IS NULL OR archived = ?", false) }
     scope :archived, -> { where(archived: true) }
+    validates :name, presence: { message: "can't be blank - every habit needs a name!" }
 
     def current_streak
         streak = 0
@@ -79,7 +80,7 @@ class Habit < ApplicationRecord
             "More than half a week into and I don't see a stop!"
         elsif current_streak == 5
             "Day 5! You are doing great! Keep it up!"
-        else current_streak < 6
+        elsif current_streak >= 6
             "You are killing it! with the #{current_streak} day"
         end
     end

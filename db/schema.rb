@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_01_003723) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_02_004704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_01_003723) do
     t.date "date"
     t.bigint "habit_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["date"], name: "index_check_ins_on_date"
     t.index ["habit_id"], name: "index_check_ins_on_habit_id"
   end
 

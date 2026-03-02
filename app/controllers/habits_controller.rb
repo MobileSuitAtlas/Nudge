@@ -184,6 +184,11 @@ class HabitsController < ApplicationController
     redirect_to request.referrer || habits_path
   end
 
+  # Edit
+  def edit
+    @habit = Habit.find(params[:id])
+  end
+
   private
 
   def habits_params

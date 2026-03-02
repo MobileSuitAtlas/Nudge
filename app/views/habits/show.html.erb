@@ -5,7 +5,7 @@
         </div>
     </div>
 
-    <!-- Encouragement Message -->
+
     <div class="row mb-4">
         <div class="col-12">
             <div class="alert alert-info text-center" role="alert">
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
+
     <div class="row gy-3 mb-4">
         <div class="col-md-6">
             <div class="card shadow-sm habit-card card-delay-1">
@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <!-- Journal Entries Section -->
+
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm habit-card card-delay-6">
@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Reminder Settings -->
+
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm habit-card card-delay-7">
@@ -141,10 +141,11 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
+
     <div class="row gy-2 mb-4">
         <div class="col-12">
             <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <%= link_to "Edit Habit", edit_habit_path(@habit), class: "btn btn-outline-secondary" %>
                 <%= button_to "Nudge", nudge_habit_path(@habit), method: :post, class: "btn btn-outline-secondary" %>
                 <%= link_to "Back to Habits", habits_path, class: "btn btn-outline-secondary" %>
             </div>

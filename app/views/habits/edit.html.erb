@@ -1,0 +1,37 @@
+<div class="container my-4">
+    <h1 class="mb-4 text-center">Edit Habits</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <%= form_with model: @habit do |form| %>
+                        <div class="mb-3">
+                            <%= form.label :name, "Habit Name", class: "form-label" %>
+                            <%= form.text_field :name, class: "form-control", placeholder: "e.g., Read for 20 minutes" %>
+                        </div>
+
+                        <div class="mb-3">
+                            <%= form.label :category, "Category", class: "form-label" %>
+                            <%= form.select :category,
+                                Habit::TEMPLATES.keys,
+                                { include_blank: "Select a catergory" },
+                                class: "form-select" %>
+                        </div>
+
+                        <div class="mb-3">
+                            <%= form.label :prompt, "Your Gentle Reminder", class: "form-label" %>
+                            <%= form.text_field :prompt, class: "form-control", placeholder: "e.g., Don't forget your daily reading!" %>
+                            <small class="text-muted"> A gentle message to nudge yourself </small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <%= form.submit "Update Your Habit", class: "btn btn-primary" %>
+                            <%= link_to "Back", habits_path, class: "btn btn-outline-secondary" %>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

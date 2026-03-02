@@ -327,12 +327,11 @@ The daily nudge system allows enabling/disabling noon reminders for each habit. 
 
 ## Future Ideas
 
-- 🔔 **Push Notifications** - Web Push API integration for actual notifications
-- 📊 **Statistics** - Charts and progress visualization
-- 👥 **User Accounts** - Sync across devices
-- 📅 **Calendar View** - Visual calendar of completions
-- 🔄 **Habit Duplication** - Clone existing habits
-
+-  **Push Notifications** - Web Push API integration for actual notifications
+-  **Statistics** - Charts and progress visualization
+-  **User Accounts** - Sync across devices
+-  **Calendar View** - Visual calendar of completions
+-  **Tags System** - Partially Implemented 
 ---
 
 ## License

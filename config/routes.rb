@@ -16,6 +16,5 @@ Rails.application.routes.draw do
   post "habits/:id/check_in", to: "habits#check_in", as: "check_in_habit"
   post "toggle_theme", to: "habits#toggle_theme"
   get "export", to: "habits#export"
-  get "today", to: "habits#today"
   get "up" => "rails/health#show", as: :rails_health_check
 end
