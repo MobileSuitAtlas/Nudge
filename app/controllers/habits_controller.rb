@@ -105,6 +105,10 @@ class HabitsController < ApplicationController
     redirect_to "/"
   end
 
+  def edit
+    @habit = Habit.find(params[:id])
+  end
+
   def reset_focus
     session[:focus_habit_id] = nil
     session[:focus_habit_date] = nil
@@ -185,11 +189,6 @@ class HabitsController < ApplicationController
     current = session[:theme] || "light"
     session[:theme] = current == "light" ? "dark" : "light"
     redirect_to request.referrer || habits_path
-  end
-
-  # Edit
-  def edit
-    @habit = Habit.find(params[:id])
   end
 
   private

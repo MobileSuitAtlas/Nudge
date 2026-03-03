@@ -1,6 +1,6 @@
 // Nudge - Gentle Habit Builder JavaScript
 
-// Request Notification Permission
+// Request Notif Permission
 window.requestNotificationPermission = function() {
     if (!('Notification' in window)) {
         alert('Sorry, your browser does not support notifications.');
@@ -24,7 +24,7 @@ window.requestNotificationPermission = function() {
     });
 };
 
-// Function to trigger a gentle nudge notification
+// Function to trigger nudge notif
 window.triggerNudge = function(title, body, habitId) {
     if (Notification.permission !== 'granted') return;
 
@@ -46,7 +46,7 @@ window.triggerNudge = function(title, body, habitId) {
     setTimeout(() => notification.close(), 10000);
 };
 
-// Hide notification button if already enabled
+// Hide notif button if already enabled (still working on it)
 if (localStorage.getItem('nudge_notifications') === 'enabled') {
     const notifyBtn = document.getElementById('enable-notifications');
     if (notifyBtn) {

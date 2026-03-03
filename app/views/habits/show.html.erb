@@ -69,7 +69,6 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">💭 Journal & Thoughts</h5>
                     
-                    <!-- Entry Form -->
                     <div class="entry-form mb-4">
                         <%= form_with(model: [@habit, @habit.entries.build], local: true) do |f| %>
                             <div class="mb-2">
@@ -85,13 +84,12 @@
                         <% end %>
                     </div>
 
-                    <!-- Previous Entries -->
                     <% if @habit.entries.any? %>
                         <hr class="my-3">
                         <h6 class="text-muted mb-3">Previous Entries</h6>
                         <div class="entries-list">
                             <% @habit.entries.order(entry_date: :desc, created_at: :desc).each do |entry| %>
-                                <div class="entry-item mb-3 p-3 rounded bg-light">
+                                <div class="entry-item mb-3 p-3 rounded bg-dark">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="entry-date">
                                             <%= entry.entry_date.strftime("%B %d, %Y") %>
