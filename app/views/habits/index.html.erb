@@ -2,38 +2,37 @@
     <h1 class="mb-4 text-center">Your Habits :)</h1>
 
     <div class="d-flex gap-2 mb-4 justify-content-center">
-        <%= link_to "Start a New Habit", new_habit_path, class: "btn btn-primary" %>
-        <%= button_to "In case you need a little Nudge :D", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-outline-secondary" if @habits.any? %>
-        <button id="enable-notifications" class="btn btn-outline-primary" onclick="requestNotificationPermission()">
+        <%= link_to "New Habit", new_habit_path, class: "btn btn-primary" %>
+        <%= button_to "Little Nudge :D", nudge_habit_path(@habits.sample), method: :post, class: "btn btn-secondary" if @habits.any? %>
+        <button id="enable-notifications" class="btn btn-primary" onclick="requestNotificationPermission()">
             🔔 Enable Nudges
         </button>
-        <%= button_to "🌙" , toggle_theme_path, method: :post, class: "btn btn-outline-secondary", title: "Toggle Dark Mode" %>
+        <%= button_to "🌙 Dark/Light Mode" , toggle_theme_path, method: :post, class: "btn btn-secondary", title: "Toggle Dark Mode" %>
     </div>
 
-    <% if @focus_habit %>
-        <div class="card mb-4 border-primary shadow-sm focus-card">
-            <div class="card-body bg-primary bg-opacity-10">
-                <h5 class="card-title text-primary fw-bold">Today's Main Focus ⭐</h5>
-
-                <p class="fs-5 mb-1">
-                    <%= @focus_habit.icon %> <%= @focus_habit.name %>
-                </p>
-
-                <% if @focus_habit.prompt.present? %>
-                    <p class="text-muted mb-2"><%= @focus_habit.prompt %></p>
-                <% end %>
-
-                <p class="text-muted small mb-2">Current streak: <%= @focus_habit.current_streak %> days</p>
-
-                <%= button_to "Remove Focus", reset_focus_habits_path, method: :post, class: "btn btn-outline-secondary btn-sm" %>
-            </div>
+    <div class="card mb-4 shadow-sm habit-card">
+        <div class="card-body text-center">
+            <% if @focus_habit %>
+                <h5 class="card-title fs-4"><%= @focus_habit.icon %> <%= @focus_habit.name %></h5>
+                <p class="small text-muted mb-2">Current streak: <%= @focus_habit.current_streak %> days</p>
+                <div class="d-flex gap-4 habit-buttons">
+                    <% if @focus_habit.check_ins.exists?(date: Date.today) %>
+                        <span class="bg-success text-white fw-bold flex-fill d-flex align-items-center justify-content-center p-2 rounded">Done for today! 🎉</span>
+                    <% else %>
+                        <%= button_to "Mark Done", check_in_habit_path(@focus_habit), method: :post, class: "btn btn-success flex-fill" %>
+                    <% end %>
+                    <%= button_to "Unfocus", reset_focus_habits_path, method: :post, class: "btn btn-outline-warning flex-fill" %>
+                </div>
+            <% else %>
+                <h5 class="card-title fs-4 text-muted">Focused Habit</h5>
+                <p class="text-muted">Tap a habit below to focus</p>
+            <% end %>
         </div>
-    <% end %>
+    </div>
 
-    <%# Weekly Progress Summary %>
     <% if @habits.any? %>
         <div class="weekly-progress mb-4">
-            <div class="weekly-progress-number"><%= @habits.sum { |h| h.check_ins.where("date >= ?", Date.today - 7.days).count } %></div>
+            <div class="weekly-progress-number"><%= @habits.sum { |h| h.check_ins.where("date >= ?", Date.today - 7.days).count} %></div>
             <div class="weekly-progress-label">check-ins this week</div>
         </div>
     <% end %>
@@ -56,17 +55,17 @@
                             Current streak: <%= habit.current_streak %> days
                         </p>
 
-                        <div class="d-flex gap-2 habit-buttons">
+                        <div class="d-flex gap-4 habit-buttons">
                             <% if checked_in_today %>
-                                <span class="text-success fw-bold flex-fill d-flex align-items-center justify-content-center">Done already? Awesome job today! :D</span>
+                                <span class="bg-success text-white fw-bold flex-fill d-flex align-items-center justify-content-center p-2 rounded">Awesome job today! :D</span>
                             <% else %>
                                 <%= button_to "Mark Done for Today", check_in_habit_path(habit), method: :post, class: "btn btn-success flex-fill" %>
                             <% end %>
-                            <%= link_to "View Details", habit_path(habit), class: "btn btn-outline-primary flex-fill" %>
+                            <%= link_to "View Details", habit_path(habit), class: "btn btn-primary flex-fill" %>
                             <% if @focus_habit&.id == habit.id %>
                                 <span class="badge bg-primary d-flex align-items-center px-3">⭐ Focused</span>
                             <% else %>
-                                <%= button_to "Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning flex-fill" %>
+                                <%= button_to "Focus ⭐", set_focus_habit_path(habit), method: :post, class: "btn btn-outline-warning flex-fill", data: { turbo: false } %>
                             <% end %>
                         </div>
                     </div>

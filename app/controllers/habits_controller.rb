@@ -4,8 +4,11 @@ class HabitsController < ApplicationController
     @show_archived = params[:show_archived] == "true"
     @archived_habits = Habit.archived if @show_archived
 
+    # Convert session date string to Date object for comparison
+    session_date = session[:focus_habit_date].is_a?(String) ? Date.parse(session[:focus_habit_date]) : session[:focus_habit_date]
+
     # Load focus habit from session if set for today
-    if session[:focus_habit_date] == Date.today && session[:focus_habit_id].present?
+    if session_date == Date.today && session[:focus_habit_id].present?
       @focus_habit = Habit.find_by(id: session[:focus_habit_id])
       # If focus habit was archived or deleted, clear it
       if @focus_habit.nil? || @focus_habit.archived?
@@ -94,7 +97,7 @@ class HabitsController < ApplicationController
 
     redirect_back fallback_location: habit_path(habit)
   end
-  
+
   def set_focus
     session[:focus_habit_id] = params[:id]
     session[:focus_habit_date] = Date.today
