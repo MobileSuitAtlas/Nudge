@@ -1,6 +1,6 @@
 # Nudge - A Gentle Habit Builder
 
-> "A gentle habit tracker designed for people with anxiety or those working on personal growth."
+> "A gentle habit tracker designed for people working on personal growth or those with anxiety."
 
 Nudge helps build positive habits without pressure or negative reinforcement. It's designed to remind gently - not with loud alarms, but with kind messages like *"Hello! Have you done your reading for today?"*
 
@@ -14,7 +14,7 @@ The goal isn't to keep using the app forever. The best outcome? One day drop it,
 - **Habit Tracking** - Create habits with names, categories, and custom prompts
 - **Daily Check-Ins** - Mark habits as complete for the day
 - **Streak System** - Track consecutive days of completion (current & longest)
-- **Focus Habit** - Set one habit as today's main focus ⭐
+- **Focus Habit** - Set one habit as today's main focus 
 - **Journal Entries** - Write thoughts, progress, and inspiration for each habit
 - **Archive Habits** - Pause habits without deleting (keep all history!)
 - **Colored Tags** - Organize habits with custom tags (Health, Fitness, Learning, etc.)
@@ -47,7 +47,7 @@ Choose from preset categories or create custom habits:
 - ✍️ Writing
 - 💪 Workout
 - 🎨 Drawing
-- Custom (anything you want!)
+- Custom (anything you want)
 
 ### Tags
 Organize habits with colored tags:
@@ -66,7 +66,7 @@ Organize habits with colored tags:
 |------------|---------|
 | **Ruby on Rails 8.1** | Web framework |
 | **PostgreSQL** | Database |
-| **Bootstrap 5** | Styling & responsive design |
+| **Bootstrap 5** | Styling |
 | **Turbo** | Fast page updates |
 | **Stimulus** | Interactive JavaScript |
 | **Whenever** | Cron scheduling for nudges |
@@ -309,11 +309,15 @@ This project includes model tests for Habit validations and streak logic.
 ### Running Tests
 ```bash
 rails test                 # Run all tests
-rails test test/models/habit_test.rb  # Run model tests only
+rails test test/models/   # Run model tests only
+rails test test/models/habit_test.rb  # Run specific file test
 ```
 
 ### Test Coverage
-- **Habit Model** - Validations (name required), streak calculations (current & longest), broken streak handling
+- **Habit Model** - Validations, streak calculations (current & longest), broken streak handling.
+- **Entry Model** - Content presence, default date, association.
+- **Tag Model** - Name uniqueness and presence, color presence.
+- **Badge Model** - Name presence, requirement_days positive check.
 
 ---
 
@@ -330,7 +334,7 @@ rails test test/models/habit_test.rb  # Run model tests only
 | Feb 27, 2026 | Added PWA manifest for mobile install, Journal Entries feature, and simple daily nudge (one button, noon default) |
 | Feb 28, 2026 | Added Archive/Unarchive habits feature, Tags system with colored tags, Badge/Achievement system, Dark Mode toggle, and CSV Export feature |
 | Mar 1, 2026 | Consolidated pages, fixed Dark Mode, fixed encouragement_message elsif bug, fixed badges association (has_many through), added edit view and controller action, added Habit model validations, added index on check_ins.date, added model tests for validations and streaks |
-
+| Mar 2, 2026 | Added Entry, Tag, Badge model tests, added validations to Tag & Badge models |
 ---
 
 ## Future Ideas

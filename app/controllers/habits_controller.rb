@@ -14,7 +14,6 @@ class HabitsController < ApplicationController
       end
     end
 
-    # Auto-select first habit only if no focus is set and no habits existed before
     if @focus_habit.nil? && @habits.any? && session[:focus_habit_id].nil?
       session[:focus_habit_id] = @habits.first.id
       session[:focus_habit_date] = Date.today

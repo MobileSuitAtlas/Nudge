@@ -1,7 +1,7 @@
 require "test_helper"
 
 class HabitTest < ActiveSupport::TestCase
-  # Validation Tests
+
   test "name should be present" do
     habit = Habit.new(name: "")
     assert_not habit.valid?
