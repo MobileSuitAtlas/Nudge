@@ -124,11 +124,6 @@ class Habit < ApplicationRecord
         check_ins.count
     end
 
-    # ----------------------------------------
-    # Reminder / Scheduling Methods
-    # ----------------------------------------
-    # TODO: Timezone handling - needs_nudge? uses server time (Time.current)
-    # instead of local time. Need to store timezone and use it here.
 
     # Check if reminders are enabled for this habit
     def reminders_enabled?
@@ -136,20 +131,10 @@ class Habit < ApplicationRecord
     end
 
     # Check if habit not checked in today
-    # TODO: This uses server timezone - needs local timezone to work correctly
     def needs_nudge?
         return false unless reminders_enabled?
         return false if checked_on?(Date.today)
-
-        # Check if current time is past the reminder time (with 30-min window)
-        current_time = Time.current
-        reminder_datetime = Time.current.change(
-            hour: reminder_time.hour,
-            min: reminder_time.min
-        )
-
-        # Give a 30-minute window after the reminder time
-        current_time >= reminder_datetime && current_time <= reminder_datetime + 30.minutes
+        true
     end
 
     # Get the nudge message for notifications

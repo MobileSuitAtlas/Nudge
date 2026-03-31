@@ -31,7 +31,8 @@ The goal isn't to keep using the app forever. The best outcome? One day drop it,
   - 🌟 Year Champion (365 days)
 
 ### Encouragement System
-- **Daily Nudges** - Toggle gentle noon reminders
+- **Daily Nudges** - Toggle gentle reminders sent via ntfy.sh push notifications
+- **ntfy.sh Integration** - Receive notifications on your phone or desktop when habits need attention
 - **Streak Messages** - Personalized messages based on streak length
 - **Milestone Celebrations** - Special messages at 7, 14, 21, 28, and 30 days
 - **Badge Rewards** - Earn visual badges for achievements
@@ -69,6 +70,7 @@ Organize habits with colored tags:
 | **Bootstrap 5** | Styling |
 | **Turbo** | Fast page updates |
 | **Stimulus** | Interactive JavaScript |
+| **HTTParty** | HTTP client for API calls |
 | **Whenever** | Cron scheduling for nudges |
 | **Puma** | Web server |
 | **Docker** | Container deployment |
@@ -145,6 +147,8 @@ Nudge/
 │   ├── jobs/
 │   │   ├── application_job.rb        # Base job
 │   │   └── send_nudge_job.rb         # Background nudge sending
+│   ├── services/
+│   │   └── ntfy_service.rb          # ntfy.sh notification service
 │   └── javascript/controllers/       # Stimulus JS controllers
 ├── config/
 │   ├── routes.rb                     # URL routes
@@ -157,7 +161,8 @@ Nudge/
 │   ├── schema.rb                     # Database structure
 │   └── seeds.rb                      # Sample data
 ├── lib/tasks/
-│   └── nudge.rake                    # Nudge scheduler task
+│   ├── nudge.rake                    # Nudge scheduler task
+│   └── test_ntfy.rake               # Ntfy service test tasks
 ├── public/
 │   ├── manifest.json                 # PWA manifest
 │   ├── icon.png                      # App icon (PNG)
@@ -298,7 +303,43 @@ The app provides different messages based on streak length:
 - Milestone (30 days): "One month of pure consistency and dedication!"
 
 ### Daily Nudge
-The daily nudge system allows enabling/disabling noon reminders for each habit. When enabled, a gentle notification appears if the habit hasn't been checked in for the day.
+The daily nudge system sends push notifications via ntfy.sh. When a habit has reminders enabled and hasn't been checked in for the day, a gentle notification is sent.
+
+### Ntfy.sh Integration
+The app integrates with [ntfy.sh](https://ntfy.sh) for push notifications. Notifications include:
+- **Message** - The habit's prompt or a friendly reminder
+- **Title** - "Nudge - [habit name]"
+- **Tags** - Category-based emoji (📚 Reading, ✍️ Writing, 💪 Workout, 🎨 Drawing)
+
+### NtfyService (`app/services/ntfy_service.rb`)
+```ruby
+def self.send_notification(message, options = {})
+    topic = ENV.fetch("NTFY_TOPIC", "nudge_notifications")
+
+    post("/#{topic}",
+        body: message,
+        headers: {
+            "Title" => options[:title] || "Nudge Habit Builder",
+            "Tags" => options[:tags] || "bell"
+        }
+    )
+rescue HTTParty::Error => e
+    Rails.logger.error "Ntfy notification failed: #{e.message}"
+    false
+end
+```
+
+### Testing Ntfy Notifications
+```bash
+rails ntfy:test              # Send a test notification
+rails ntfy:debug_habits      # Debug habit nudge status
+rails nudge:send_nudges      # Run the full nudge scheduler
+```
+
+### Setting Up ntfy.sh
+1. Set the `NTFY_TOPIC` environment variable to your desired topic name (e.g., `nudge_notifications`)
+2. Subscribe to your topic in the ntfy app or web interface
+3. Enable reminders on habits you want to receive nudges for
 
 ---
 
@@ -335,15 +376,16 @@ rails test test/models/habit_test.rb  # Run specific file test
 | Feb 28, 2026 | Added Archive/Unarchive habits feature, Tags system with colored tags, Badge/Achievement system, Dark Mode toggle, and CSV Export feature |
 | Mar 1, 2026 | Consolidated pages, fixed Dark Mode, fixed encouragement_message elsif bug, fixed badges association (has_many through), added edit view and controller action, added Habit model validations, added index on check_ins.date, added model tests for validations and streaks |
 | Mar 2, 2026 | Added Entry, Tag, Badge model tests, added validations to Tag & Badge models, restyled focus card, added gray card-body background, added always-visible focus card with placeholder, fixed focus session date comparison bug |
+| Mar 30, 2026 | Integrated HTTParty for ntfy.sh push notifications, created NtfyService for sending notifications, simplified needs_nudge? logic, added test rake tasks for debugging |
 ---
 
 ## Future Ideas
 
--  **Push Notifications** - Web Push API integration for actual notifications
+-  **Push Notifications** - ✅ Implemented via ntfy.sh
 -  **Statistics** - Charts and progress visualization
 -  **User Accounts** - Sync across devices
 -  **Calendar View** - Visual calendar of completions
--  **Tags System** - Partially Implemented 
+-  **Tags System** - ✅ Implemented 
 ---
 
 ## License

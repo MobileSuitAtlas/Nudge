@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
-# TODO: This rake task and the nudge system are not fully functional.
-# Issues:
-# - Uses server timezone instead of user timezone
-# - Need web API integration to send notifications
-# - Just logs nudges (SendNudgeJob)
-
 namespace :nudge do
   desc "Send gentle nudges for habits that need them"
   task send_nudges: :environment do
     puts "Checking for habits that need nudges..."
 
     Habit.all.each do |habit|
-      next unless habit.needs_nudge?
-
+      unless habit.needs_nudge?
+        puts "SKIP: #{habit.name} - reminders_enabled: #{habit.reminders_enabled?}, checked_today: #{habit.checked_on?(Date.today)}, reminder_time: #{habit.reminder_time}"
+        next
+      end
       # Check if we already sent a nudge today
       next if Rails.cache.read("nudge_sent_#{habit.id}_#{Date.today}")
 

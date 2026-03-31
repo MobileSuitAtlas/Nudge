@@ -87,4 +87,9 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Ntfy for notifications
+  NTFY_TOPIC = nudge_notifications
+  NTFY_SERVER = https://ntfy.sh
+  NTFY_PRIORITY = 3
 end
