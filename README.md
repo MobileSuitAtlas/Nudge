@@ -376,16 +376,12 @@ rails test test/models/habit_test.rb  # Run specific file test
 | Feb 28, 2026 | Added Archive/Unarchive habits feature, Tags system with colored tags, Badge/Achievement system, Dark Mode toggle, and CSV Export feature |
 | Mar 1, 2026 | Consolidated pages, fixed Dark Mode, fixed encouragement_message elsif bug, fixed badges association (has_many through), added edit view and controller action, added Habit model validations, added index on check_ins.date, added model tests for validations and streaks |
 | Mar 2, 2026 | Added Entry, Tag, Badge model tests, added validations to Tag & Badge models, restyled focus card, added gray card-body background, added always-visible focus card with placeholder, fixed focus session date comparison bug |
-| Mar 30, 2026 | Integrated HTTParty for ntfy.sh push notifications, created NtfyService for sending notifications, simplified needs_nudge? logic, added test rake tasks for debugging |
+| Mar 29, 2026 | Integrated HTTParty for ntfy.sh push notifications, created NtfyService for sending notifications, simplified needs_nudge? logic, added test rake tasks for debugging |
 ---
 
 ## Future Ideas
-
--  **Push Notifications** - ✅ Implemented via ntfy.sh
 -  **Statistics** - Charts and progress visualization
--  **User Accounts** - Sync across devices
 -  **Calendar View** - Visual calendar of completions
--  **Tags System** - ✅ Implemented 
 ---
 
 ## License
